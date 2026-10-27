@@ -1,0 +1,285 @@
+---
+title: "tarea5 - Estructuras de Datos, Divide y Vencerás"
+subtitle: "Análisis y Diseño de Algoritmos — Maestría PCIC (Semestre 2027-1)"
+author:
+  - name: "Tlacaelel Jaime Flores Villaseñor"
+  - name: "Victor Rosales Jaimes"
+date: '11/08/2026'
+format:
+  pdf:
+    documentclass: article
+    papersize: letter
+    geometry:
+      - top=2.5cm
+      - bottom=2.5cm
+      - left=2.5cm
+      - right=2.5cm
+    colorlinks: true
+    number-sections: true
+    header-includes:
+      - \usepackage{amsmath, amssymb, amsthm}
+      - \usepackage{algorithm}
+      - \usepackage{algpseudocode}
+---
+
+
+# Ejercicio 1. Heap binario máximo y heapsort
+
+## Enunciado
+
+Considera los algoritmos de heap binario máximo y heapsort que aparecen en las
+[diapositivas utilizadas en clase](https://algs4.cs.princeton.edu/lectures/keynote/24PriorityQueues.pdf).
+
+### Inciso a. Propiedad de `sink`
+
+Demuestra la siguiente propiedad de la función `sink` (diapositiva 20): si al
+llamar `sink(A, k, n)`, cada uno de los subárboles con raíces $A[2k]$ y
+$A[2k+1]$, respectivamente, cumple con la propiedad heap-max (es decir, el entero
+en cada vértice del árbol es mayor o igual que los enteros en sus hijos), entonces
+al finalizar `sink`, el subárbol con raíz $A[k]$ cumple con la propiedad heap-max.
+
+## Solución del inciso a
+
+### Funcionamiento de `sink`
+
+<!-- Explicar brevemente el procedimiento de la diapositiva 20.
+     Si se incluye pseudocódigo, mantener los índices y las condiciones
+     de la versión usada en clase. -->
+
+### Demostración
+
+<!-- Precisar la hipótesis y la propiedad que se quiere demostrar.
+     Desarrollar el argumento y considerar los hijos que existan.
+     Justificar por qué al terminar todo el subárbol original satisface
+     la propiedad heap-max. -->
+
+## Enunciado del inciso b
+
+Demuestra la siguiente invariante de ciclo de la fase de construcción de
+heapsort (ciclo de la diapositiva 42): al inicio del ciclo, para todo
+$k+1 \leq \ell \leq n$, se cumple que el subárbol con raíz en $A[\ell]$
+cumple con la propiedad heap-max.
+
+## Solución del inciso b
+
+### Inicialización
+
+<!-- Especificar el valor inicial de k y demostrar que el invariante
+     se cumple antes de la primera iteración. -->
+
+### Mantenimiento
+
+<!-- Suponer que el invariante se cumple al comenzar una iteración.
+     Justificar que se puede aplicar el resultado del inciso a.
+     Demostrar que el invariante se conserva al actualizar k. -->
+
+### Conclusión al terminar
+
+<!-- Indicar qué permite concluir el invariante cuando termina el ciclo
+     y por qué el arreglo representa un heap máximo. -->
+
+# Ejercicio 2. Emparejamiento de estaciones en un árbol
+
+## Enunciado
+
+Sea $T$ un árbol binario enraizado. Todos los vértices de $T$ tienen un atributo
+binario `flag`, y solo para un número par de ellos, a los que llamaremos
+**estaciones**, su atributo es `true`.
+
+Se busca emparejar las estaciones de forma tal que en $T$ existan caminos
+disjuntos en aristas que conecten las parejas de estaciones. Los caminos no
+pueden compartir aristas, aunque sí pueden compartir vértices.
+
+Diseña un algoritmo tipo divide y vencerás de tiempo $O(n)$ que imprima parejas
+de estaciones con la propiedad descrita, donde $n$ es el número de vértices de
+$T$. Toda estación debe quedar emparejada.
+
+Puedes suponer que existe una instrucción `Print(s)` que imprime la cadena `s`
+y toma tiempo $O(1)$. La raíz $r$ de $T$ puede ser parte de la entrada.
+
+El árbol está representado como una lista de adyacencia. Para cada vértice $v$,
+$\operatorname{left}(v)$ y $\operatorname{right}(v)$ denotan sus hijos izquierdo
+y derecho, y $\pi(v)$ denota su padre. Si alguno no existe, su valor es `NONE`.
+
+Explica la idea del algoritmo y da pruebas de terminación, corrección, tiempo
+y espacio. ¿Existen entradas para las que tu algoritmo corre en tiempo
+$O(\log n)$? Argumenta tu respuesta.
+
+## Idea del algoritmo
+
+<!-- Explicar qué subproblemas se resuelven y cómo se combinan.
+     Definir con precisión qué recibe y qué devuelve cada llamada recursiva.
+     Distinguir lo que se imprime de lo que se devuelve. -->
+
+## Pseudocódigo
+
+<!-- Escribir el procedimiento principal y, si hace falta, el auxiliar.
+     Incluir casos base, llamadas recursivas y combinación de resultados.
+     Puede utilizarse un bloque de código de texto sin ejecución. -->
+
+## Prueba de terminación
+
+<!-- Identificar una cantidad que disminuya estrictamente en cada llamada
+     recursiva y explicar por qué se alcanza un caso base. -->
+
+## Prueba de corrección
+
+### Propiedad que se demostrará
+
+<!-- Formular una afirmación precisa sobre el resultado de cada llamada
+     y la información que entrega al padre. -->
+
+### Caso base
+
+<!-- Demostrar la propiedad para los casos base del pseudocódigo. -->
+
+### Paso inductivo
+
+<!-- Suponer la propiedad para los subproblemas y justificar la combinación.
+     Probar que cada estación se empareja exactamente una vez y que los
+     caminos de las parejas no comparten aristas. -->
+
+### Conclusión para el árbol completo
+
+<!-- Explicar por qué la llamada sobre la raíz resuelve todo el problema.
+     Indicar dónde se utiliza que el número total de estaciones es par. -->
+
+## Tiempo de ejecución
+
+<!-- Contar llamadas y trabajo local. Justificar la cota O(n), incluyendo
+     el costo total de las instrucciones de impresión. -->
+
+## Espacio utilizado
+
+<!-- Contar estructuras auxiliares y pila de recursión.
+     Si se usa la altura h, definirla y dar también la cota en función de n.
+     Aclarar qué se cuenta como espacio auxiliar. -->
+
+## ¿Existen entradas con tiempo $O(\log n)$?
+
+<!-- Responder para el algoritmo propuesto y argumentar en términos de
+     su trabajo total. No confundir profundidad de recursión con tiempo. -->
+
+# Ejercicio 3. Reconstrucción de un árbol binario
+
+## Enunciado
+
+Considera árboles binarios enraizados, representados como en el ejercicio
+anterior. En un recorrido se realiza una exploración tipo DFS desde la raíz
+y se produce una secuencia en la que cada vértice aparece una y solo una vez.
+Las siguientes políticas se aplican recursivamente:
+
+- **En orden:** subárbol izquierdo, raíz y subárbol derecho.
+- **Preorden:** raíz, subárbol izquierdo y subárbol derecho.
+- **Postorden:** subárbol izquierdo, subárbol derecho y raíz.
+
+Se reciben un entero $n$ y dos arreglos de longitud $n$, $EO$ y $PO$, que
+contienen los recorridos en orden y en preorden, respectivamente, de un árbol
+binario enraizado $T$. El árbol no tiene por qué ser completo ni balanceado.
+
+Diseña un algoritmo tipo divide y vencerás de tiempo $O(n^2)$ que produzca
+$T$ a partir de $n$, $EO$ y $PO$. Explica su idea y da pruebas de terminación,
+corrección, tiempo y espacio.
+
+¿Existen entradas para las que tu algoritmo corre en tiempo $O(n\log n)$?
+¿Y $O(n)$? ¿Cómo modificarías tu algoritmo si $PO$ tuviera el recorrido en
+postorden en lugar de preorden? Argumenta tus respuestas.
+
+## Idea del algoritmo
+
+<!-- Explicar cómo se identifica la raíz, cómo se delimitan los dos
+     subproblemas y cómo se construye el árbol resultante.
+     Precisar la representación de los nodos y sus referencias.
+     Si se requiere, aclarar que los recorridos identifican vértices,
+     no solo valores que pudieran repetirse. -->
+
+## Pseudocódigo
+
+<!-- Definir los parámetros y los intervalos usados en cada arreglo.
+     Incluir casos base y construcción de enlaces a hijos y padres.
+     Precisar si se pasan índices o se copian subarreglos. -->
+
+## Prueba de terminación
+
+<!-- Indicar la medida que disminuye y los casos base alcanzados. -->
+
+## Prueba de corrección
+
+### Caso base
+
+<!-- Comprobar los casos base definidos en el algoritmo. -->
+
+### Hipótesis inductiva
+
+<!-- Escribir qué se supone correcto para los subproblemas menores. -->
+
+### Paso inductivo
+
+<!-- Justificar la elección de raíz y la separación de los recorridos.
+     Aplicar la hipótesis y demostrar que la combinación reconstruye T. -->
+
+## Tiempo de ejecución
+
+<!-- Expresar el costo en términos de los tamaños de ambos subárboles
+     y del trabajo local. Justificar O(n^2) en el peor caso.
+     Incluir el costo de búsquedas y copias si el algoritmo las realiza. -->
+
+## Espacio utilizado
+
+<!-- Distinguir el árbol producido del espacio auxiliar.
+     Considerar la pila recursiva y los subarreglos si se copian. -->
+
+## Entradas con tiempo $O(n\log n)$
+
+<!-- Responder para el algoritmo escrito, describir una familia de entradas
+     si existe y justificar su costo. -->
+
+## Entradas con tiempo $O(n)$
+
+<!-- Examinar el trabajo local y la forma del árbol en el algoritmo escrito.
+     Si existe una familia de entradas, describirla y justificar el costo. -->
+
+## Modificación para usar postorden
+
+### Cambios en la idea del algoritmo
+
+<!-- Explicar cómo cambian la elección de raíz y la delimitación de los
+     subproblemas cuando PO contiene postorden. -->
+
+### Pseudocódigo o cambios al pseudocódigo original
+
+<!-- Mostrar con precisión las instrucciones o los intervalos modificados. -->
+
+### Justificación
+
+<!-- Argumentar por qué la modificación reconstruye el árbol y señalar
+     si cambian las cotas de tiempo y espacio. -->
+
+# Ejercicio 4. Consultas de rutas a gran escala
+
+## Enunciado
+
+Ve el [video indicado en la tarea](https://www.youtube.com/watch?v=kS-CGkiPetQ)
+y explica con tus propias palabras, en **no más de una página**, por qué el
+algoritmo de Dijkstra no es lo suficientemente rápido en sistemas del tamaño
+de empresas como Google y cómo puede modificarse para responder con rapidez
+a pesar de los grandes volúmenes de peticiones que reciben.
+
+## Explicación
+
+<!-- Redactar una explicación continua con tus propias palabras.
+     Basarse en las técnicas que realmente expone el video.
+     Conectar el problema de escala con las modificaciones y su efecto
+     en el costo de las consultas. Verificar el límite de una página
+     sobre el PDF final. -->
+
+<!-- Revisión final:
+     [ ] Sustituir el nombre del segundo integrante.
+     [ ] Completar los dos incisos del ejercicio 1.
+     [ ] Completar algoritmo, pruebas, tiempo y espacio del ejercicio 2.
+     [ ] Responder la pregunta sobre O(log n) del ejercicio 2.
+     [ ] Completar algoritmo, pruebas, tiempo y espacio del ejercicio 3.
+     [ ] Responder O(n log n), O(n) y modificación a postorden.
+     [ ] Verificar el límite de una página del ejercicio 4.
+     [ ] Renderizar y revisar el PDF.
+     [ ] Un solo integrante entrega el archivo en Classroom. -->

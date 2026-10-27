@@ -1,0 +1,15 @@
+project:
+  title: "tarea5"
+  type: default
+
+format:
+  pdf:
+    documentclass: article
+    papersize: letter
+    geometry: 
+      - margin=2.5cm
+    number-sections: true
+    colorlinks: true
+
+
+
