@@ -1,5 +1,5 @@
 ---
-title: "tarea5 - Estructuras de Datos, Divide y Vencerás"
+title: "Tarea 5 - Estructuras de Datos, Divide y Vencerás"
 subtitle: "Análisis y Diseño de Algoritmos — Maestría PCIC (Semestre 2027-1)"
 author:
   - name: "Tlacaelel Jaime Flores Villaseñor"
@@ -42,16 +42,29 @@ al finalizar `sink`, el subárbol con raíz $A[k]$ cumple con la propiedad heap-
 
 ### Funcionamiento de `sink`
 
-<!-- Explicar brevemente el procedimiento de la diapositiva 20.
-     Si se incluye pseudocódigo, mantener los índices y las condiciones
-     de la versión usada en clase. -->
+La función `sink(A, k, n)` restaura la propiedad heap-max en el subárbol cuya raíz está en la posición $k$, suponiendo que los subárboles de sus hijos ya cumplen dicha propiedad. Mientras el nodo actual tenga al menos un hijo, se selecciona al hijo de mayor valor y se compara con el padre. Si el padre es mayor o igual que ese hijo, el procedimiento termina, pues también es mayor o igual que cualquier otro hijo existente. En caso contrario, se intercambian ambos valores y se continúa desde la posición del hijo seleccionado, a la que descendió el valor del padre. Este proceso se repite hasta llegar a una hoja o hasta que el nodo actual cumpla la propiedad heap-max con sus hijos. Al finalizar, todo el subárbol de la posición inicial satisface dicha propiedad.
 
 ### Demostración
 
-<!-- Precisar la hipótesis y la propiedad que se quiere demostrar.
-     Desarrollar el argumento y considerar los hijos que existan.
-     Justificar por qué al terminar todo el subárbol original satisface
-     la propiedad heap-max. -->
+La demostracion se hace por inducción.
+
+- Caso base:  Si $h=0$ el subarbol consiste únicamente en una hoja, como esta no tiene hijos cumple con la propiedad de heap-max y `sink` termina sin realizar cambios.
+
+- Hipótesis de induccion:  Suponemos que la afirmación es cierta para todo los subárboles con altura menor a $h$.
+
+- Paso inductivo: Consideremos un subárbol $T$ de altura $h>0$, cuya raíz está en la posición $k$ y contiene el valor $x=A[k]$. Por la condición del enunciado, los subárboles que comienzan en los hijos de esta raíz ya cumplen la propiedad heap-max.
+
+Sea $j$ la posición del hijo de mayor valor y sea $y=A[j]$. Si la raíz tiene un solo hijo, seleccionamos ese hijo. Entonces tenemos dos casos:
+
+1. Si $x\geq y$, la raíz es mayor o igual que cada uno de sus hijos. Como los subárboles de estos ya son heaps máximos, todo $T$ cumple la propiedad heap-max y `sink` termina.
+
+2. Si $x<y$, el algoritmo intercambia ambos valores: $y$ queda en la raíz de $T$ y $x$ queda en la posición $j$ y el procedimiento continúa desde $j$.
+
+En el segundo caso, consideremos el subárbol cuya raíz está en $j$. Su altura es menor que $h$. El intercambio solo cambió el valor de su raíz; los subárboles de los hijos de $j$ permanecieron intactos y siguen siendo heaps máximos. Por lo tanto, por la hipótesis de inducción, dicho subárbol queda convertido en un heap-max.
+
+Falta comprobar que el valor $y$, que subió a la raíz de $T$, queda correctamente colocado. Antes del intercambio, $y$ era el máximo de su propio subárbol. Además, si existe otro hijo de la raíz de $T$, $y$ es mayor o igual que su valor y, por tanto, que todos los valores de ese otro subárbol. Como también $y>x$, resulta que $y$ es mayor o igual que todos los valores que quedan debajo de él. Los intercambios posteriores únicamente reorganizan esos valores, por lo que esta relación se conserva.
+
+Así, al finalizar, los subárboles de ambos hijos existentes son heap-max y la raíz de $T$ es mayor o igual que sus hijos. Por consiguiente, todo $T$ cumple la propiedad heap-max.
 
 ## Enunciado del inciso b
 
@@ -62,21 +75,25 @@ cumple con la propiedad heap-max.
 
 ## Solución del inciso b
 
+Demostraremos que, al inicio de cada iteración, para toda posición $\ell$ tal que $k+1\leq\ell\leq n$, el subárbol con raíz en $A[\ell]$ cumple la propiedad heap-max.
+
 ### Inicialización
 
-<!-- Especificar el valor inicial de k y demostrar que el invariante
-     se cumple antes de la primera iteración. -->
+Antes de la primera iteración, $k=\lfloor n/2\rfloor$. Todas las posiciones $\ell>\lfloor n/2\rfloor$ corresponden a hojas, pues la posición de su posible hijo izquierdo, $2\ell$, es mayor que $n$. Cada hoja cumple la propiedad heap-max porque no tiene hijos. Por tanto, el invariante se cumple al inicio de la primera iteración.
 
 ### Mantenimiento
 
-<!-- Suponer que el invariante se cumple al comenzar una iteración.
-     Justificar que se puede aplicar el resultado del inciso a.
-     Demostrar que el invariante se conserva al actualizar k. -->
+Supongamos que el invariante se cumple al inicio de una iteración cuyo índice es $k$. Los hijos existentes del nodo en la posición $k$ están en las posiciones $2k$ y $2k+1$, ambas mayores que $k$. Por el invariante, los subárboles con raíz en esos hijos cumplen la propiedad heap-max.
+
+En consecuencia, se cumplen las condiciones del inciso a: después de ejecutar sink(A,k,n), todo el subárbol con raíz en la posición $k$ es un heap máximo.
+
+Además, los subárboles que comienzan en posiciones mayores que $k$ siguen cumpliendo la propiedad. Los que están dentro del subárbol recién reparado la cumplen porque forman parte de un heap máximo; los que están fuera permanecen sin cambios.
+
+Así, después de ejecutar sink, todos los subárboles con raíz en posiciones $\ell$ tales que $k\leq\ell\leq n$ cumplen la propiedad heap-max. Al disminuir el índice a $k'=k-1$, este intervalo equivale a $k'+1\leq\ell\leq n$. Por tanto, el invariante se conserva para la siguiente iteración.
 
 ### Conclusión al terminar
 
-<!-- Indicar qué permite concluir el invariante cuando termina el ciclo
-     y por qué el arreglo representa un heap máximo. -->
+El ciclo termina después de procesar $k=1$ y disminuir el índice a $k=0$. Por el invariante, todos los subárboles con raíz en posiciones $1\leq\ell\leq n$ cumplen la propiedad heap-max. En particular, la cumple el subárbol con raíz en la posición $1$, que contiene todo el árbol. Por lo tanto, al finalizar la fase de construcción, el arreglo representa un heap máximo.
 
 # Ejercicio 2. Emparejamiento de estaciones en un árbol
 
