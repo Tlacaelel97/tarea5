@@ -124,58 +124,141 @@ $O(\log n)$? Argumenta tu respuesta.
 
 ## Idea del algoritmo
 
-<!-- Explicar qué subproblemas se resuelven y cómo se combinan.
-     Definir con precisión qué recibe y qué devuelve cada llamada recursiva.
-     Distinguir lo que se imprime de lo que se devuelve. -->
+La idea del algoritmo es aplicar divide y vencerás sobre el árbol con raíz $r$. Para cada nodo $v$, se resuelven recursivamente los subárboles de sus hijos. Cada llamada devuelve, como máximo, una estación pendiente de emparejar, o `NONE` si todas las estaciones de su subárbol ya quedaron emparejadas. El nodo $v$ reúne las estaciones pendientes recibidas y se incluye a sí mismo si es una estación. Con estas candidatas forma e imprime las parejas posibles y devuelve al padre la estación que quede pendiente, si existe. Durante este proceso se garantiza que los caminos de las parejas formadas no comparten aristas y que el camino desde la estación pendiente hasta $v$ queda libre de aristas utilizadas por esas parejas. Como el árbol completo contiene un número par de estaciones, al finalizar la llamada sobre $r$ no queda ninguna pendiente y todas quedan emparejadas.
 
 ## Pseudocódigo
 
-<!-- Escribir el procedimiento principal y, si hace falta, el auxiliar.
-     Incluir casos base, llamadas recursivas y combinación de resultados.
-     Puede utilizarse un bloque de código de texto sin ejecución. -->
+```text
+Función Emparejar(v)
+    si v = NONE entonces
+        devolver NONE
+
+    izquierda ← Emparejar(left(v))
+    derecha   ← Emparejar(right(v))
+
+    P ← lista vacía
+
+    si izquierda ≠ NONE entonces
+        AgregarAlFinal(P, izquierda)
+
+    si derecha ≠ NONE entonces
+        AgregarAlFinal(P, derecha)
+
+    si flag(v) = true entonces
+        AgregarAlFinal(P, v)
+
+    si longitud(P) ≥ 2 entonces
+        Print((P[1], P[2]))
+
+    si longitud(P) = 1 entonces
+        devolver P[1]
+
+    si longitud(P) = 3 entonces
+        devolver P[3]
+
+    devolver NONE
+
+```
 
 ## Prueba de terminación
 
-<!-- Identificar una cantidad que disminuya estrictamente en cada llamada
-     recursiva y explicar por qué se alcanza un caso base. -->
+Consideremos como medida el número de vértices del subárbol recibido por cada llamada a `Emparejar(v)`. Si $v=\texttt{NONE}$, el subárbol está vacío y la función termina inmediatamente.
+
+Si $v\neq\texttt{NONE}$, el algoritmo realiza llamadas recursivas sobre los subárboles de sus hijos. Cada uno contiene estrictamente menos vértices que el subárbol con raíz en $v$, pues no incluye al propio $v$. Por tanto, la medida disminuye estrictamente en cada descenso recursivo y, al ser un entero no negativo, necesariamente se alcanza el caso base.
+
+Una vez que regresan ambas llamadas recursivas, se ejecuta una cantidad finita de operaciones sobre una lista de tamaño máximo tres y se devuelve un resultado. En consecuencia, todas las llamadas terminan y, en particular, termina la llamada inicial `Emparejar(r)`.
 
 ## Prueba de corrección
 
-### Propiedad que se demostrará
+Demostraremos por inducción sobre el número de vértices del subárbol que, al finalizar `Emparejar(v)`, se cumplen las siguientes propiedades:
 
-<!-- Formular una afirmación precisa sobre el resultado de cada llamada
-     y la información que entrega al padre. -->
+1. Todas las estaciones del subárbol quedan emparejadas exactamente una vez, salvo, como máximo, una estación pendiente. La función devuelve esa estación si existe y `NONE` en caso contrario.
+2. Los caminos que conectan las parejas impresas son disjuntos en aristas.
+3. Si se devuelve una estación pendiente, el camino desde ella hasta $v$ no comparte aristas con los caminos de las parejas impresas.
 
 ### Caso base
 
-<!-- Demostrar la propiedad para los casos base del pseudocódigo. -->
+Si el subárbol está vacío, entonces $v=\texttt{NONE}$. No hay estaciones ni caminos, y el algoritmo devuelve `NONE`. Por tanto, las tres propiedades se cumplen.
+
+### Hipótesis inductiva
+
+Supongamos que las tres propiedades se cumplen para cualquier subárbol con menos de $n$ vértices.
 
 ### Paso inductivo
 
-<!-- Suponer la propiedad para los subproblemas y justificar la combinación.
-     Probar que cada estación se empareja exactamente una vez y que los
-     caminos de las parejas no comparten aristas. -->
+Consideremos un subárbol con raíz en $v$ y $n>0$ vértices. Cada subárbol hijo tiene menos de $n$ vértices, por lo que podemos aplicar la hipótesis inductiva a ambas llamadas recursivas.
 
-### Conclusión para el árbol completo
+En consecuencia, cada llamada empareja todas las estaciones de su subárbol salvo, como máximo, una estación pendiente. Además, sus caminos son disjuntos en aristas y, si devuelve una estación, deja libre el camino que conecta esa estación con la raíz del subárbol hijo.
 
-<!-- Explicar por qué la llamada sobre la raíz resuelve todo el problema.
-     Indicar dónde se utiliza que el número total de estaciones es par. -->
+El algoritmo reúne en la lista $P$ las estaciones pendientes recibidas y agrega a $v$ si es una estación. La lista contiene como máximo tres estaciones distintas.
+
+**Emparejamiento de las estaciones.** Las estaciones que no aparecen en $P$ ya quedaron emparejadas exactamente una vez por las llamadas recursivas. Las que aparecen en $P$ todavía no tienen pareja. El algoritmo procede según su cantidad:
+
+- Si $P$ está vacía, devuelve `NONE`.
+- Si contiene una estación, la devuelve como pendiente.
+- Si contiene dos estaciones, imprime su pareja y devuelve `NONE`.
+- Si contiene tres estaciones, imprime la pareja formada por las dos primeras y devuelve la tercera.
+
+Así, ninguna estación se empareja dos veces y queda pendiente, como máximo, la estación devuelta. Se cumple la primera propiedad.
+
+**Separación de los caminos en aristas.** Por la hipótesis inductiva, los caminos impresos dentro de cada subárbol hijo son disjuntos en aristas. Los caminos de distintos subárboles hijos tampoco comparten aristas, pues dichos subárboles no comparten vértices.
+
+Para cada estación pendiente recibida de un hijo, consideremos su camino hasta $v$. Este se obtiene extendiendo el camino libre garantizado por la hipótesis inductiva con la arista que conecta al hijo con $v$. Esa arista no fue utilizada por las parejas formadas dentro del subárbol hijo. Si $v$ es una estación candidata, su camino hasta sí mismo no contiene aristas.
+
+Los caminos de las distintas candidatas hasta $v$ solo pueden coincidir en $v$, porque hay como máximo una candidata de cada subárbol hijo. Por tanto, al unir los caminos correspondientes a las dos estaciones emparejadas, se obtiene un camino que no comparte aristas con ninguna pareja previamente impresa. Se cumple la segunda propiedad.
+
+Si queda una candidata pendiente, su camino hasta $v$ tampoco comparte aristas con el de la nueva pareja ni con los de las parejas anteriores. Por ello, también se cumple la tercera propiedad.
+
+Por inducción, las tres propiedades se cumplen al finalizar `Emparejar(r)`. Como cada pareja contiene dos estaciones, el número total de estaciones es igual al doble del número de parejas impresas más el número de estaciones pendientes. El total de estaciones es par y solo puede quedar cero o una pendiente. Por tanto, necesariamente quedan cero estaciones pendientes. En consecuencia, todas las estaciones quedan emparejadas exactamente una vez y los caminos que conectan sus parejas son disjuntos en aristas.
 
 ## Tiempo de ejecución
 
-<!-- Contar llamadas y trabajo local. Justificar la cota O(n), incluyendo
-     el costo total de las instrucciones de impresión. -->
+Sea $n$ el número de vértices del árbol. En cada llamada sobre un vértice $v$, el algoritmo procesa recursivamente sus dos subárboles y realiza una cantidad constante de trabajo adicional: construye una lista de tamaño máximo tres, imprime como máximo una pareja y devuelve una estación o `NONE`. Por el enunciado, cada impresión cuesta $O(1)$.
+
+Si los subárboles izquierdo y derecho tienen $n_{\mathrm{izq}}$ y $n_{\mathrm{der}}$ vértices, respectivamente, entonces:
+
+$$
+n_{\mathrm{izq}}+n_{\mathrm{der}}=n-1.
+$$
+
+Por tanto, el tiempo satisface la recurrencia:
+
+$$
+T(n)=T(n_{\mathrm{izq}})+T(n_{\mathrm{der}})+\Theta(1),
+\qquad T(0)=\Theta(1).
+$$
+
+Para resolverla, consideremos el árbol de llamadas recursivas. Cada vértice del árbol original genera exactamente una llamada no vacía, por lo que existen $n$ llamadas de este tipo.
+
+Además, cada llamada no vacía realiza dos llamadas sobre sus hijos, incluyendo aquellos que son `NONE`. Así, contando también la llamada inicial, el número total de llamadas es $2n+1$. En consecuencia, hay $n+1$ llamadas sobre subárboles vacíos.
+
+Como cada llamada realiza trabajo local constante, al sumar los costos de todo el árbol de recursión obtenemos:
+
+$$
+T(n)=\Theta(n)+\Theta(n+1)=\Theta(n).
+$$
+
+Por lo tanto, el algoritmo tiene tiempo de ejecución $\Theta(n)$ y, en particular, cumple la cota requerida de $O(n)$. Este análisis se aplica tanto a árboles balanceados como a árboles desbalanceados.
 
 ## Espacio utilizado
 
-<!-- Contar estructuras auxiliares y pila de recursión.
-     Si se usa la altura h, definirla y dar también la cota en función de n.
-     Aclarar qué se cuenta como espacio auxiliar. -->
+Cada llamada a `Emparejar(v)` utiliza espacio constante para sus variables locales y para la lista $P$, que contiene como máximo tres estaciones. El árbol se consulta directamente, sin copiar sus subárboles, y las parejas se imprimen conforme se forman, por lo que no se almacenan en una estructura adicional.
+
+El espacio auxiliar depende principalmente de la pila de recursión. Como las llamadas sobre los hijos se ejecutan secuencialmente, las llamadas activas corresponden a un camino desde la raíz hacia un descendiente. Si $h$ es la altura del árbol medida en aristas, hay como máximo $h+2$ llamadas activas, incluyendo una posible llamada con argumento `NONE`.
+
+Por tanto, el espacio auxiliar es:
+
+$$
+S(n)=O(h+1).
+$$
+
+Si el árbol está balanceado, su altura es $O(\log n)$ y el espacio auxiliar es $O(\log n)$. En el peor caso, el árbol puede ser una cadena de $n$ vértices, con altura $n-1$, por lo que el espacio auxiliar es $O(n)$. Esta cota excluye el almacenamiento del árbol de entrada.
 
 ## ¿Existen entradas con tiempo $O(\log n)$?
 
-<!-- Responder para el algoritmo propuesto y argumentar en términos de
-     su trabajo total. No confundir profundidad de recursión con tiempo. -->
+No existen familias de entradas de tamaño creciente para las que el algoritmo propuesto tenga tiempo $O(\log n)$, pues siempre visita los (n) vértices del árbol y realiza trabajo constante en cada uno. Por tanto, su tiempo de ejecución es $\Theta(n)$, independientemente de la forma del árbol y de la distribución de las estaciones.
+
+Incluso si el árbol está balanceado y tiene altura $O(\log n)$, el algoritmo procesa ambos subárboles de cada nodo. La altura determina la profundidad de la recursión, pero el tiempo total depende del trabajo acumulado en todas las llamadas, que es ($\Theta(n)$).
 
 # Ejercicio 3. Reconstrucción de un árbol binario
 
