@@ -287,73 +287,243 @@ postorden en lugar de preorden? Argumenta tus respuestas.
 
 ## Idea del algoritmo
 
-<!-- Explicar cómo se identifica la raíz, cómo se delimitan los dos
-     subproblemas y cómo se construye el árbol resultante.
-     Precisar la representación de los nodos y sus referencias.
-     Si se requiere, aclarar que los recorridos identifican vértices,
-     no solo valores que pudieran repetirse. -->
+La idea es reconstruir el árbol mediante divide y vencerás, utilizando los recorridos en orden $EO$ y en preorden $PO$. En cada llamada, el primer elemento del segmento correspondiente de $PO$ identifica la raíz del subárbol que se desea construir. Se busca ese vértice en el segmento correspondiente de $EO$: los elementos anteriores pertenecen al subárbol izquierdo y los posteriores al derecho. El número de elementos de cada lado permite delimitar también sus segmentos en $PO$, donde después de la raíz aparecen primero los vértices del subárbol izquierdo y luego los del derecho. Con esta información se crea la raíz y se reconstruyen recursivamente ambos subárboles, enlazándolos como sus hijos y estableciendo sus referencias al padre. Si el segmento está vacío, se devuelve `NONE`. Para evitar copiar los arreglos, cada llamada trabaja con índices que delimitan los segmentos. La llamada inicial procesa ambos recorridos completos y devuelve la raíz del árbol reconstruido.
 
 ## Pseudocódigo
 
-<!-- Definir los parámetros y los intervalos usados en cada arreglo.
-     Incluir casos base y construcción de enlaces a hijos y padres.
-     Precisar si se pasan índices o se copian subarreglos. -->
+```text
+Función Reconstruir(EO, PO, i, j, p, padre)
+    si i > j entonces
+        devolver NONE
+
+    valorRaiz ← PO[p]
+
+    q ← i
+    mientras EO[q] ≠ valorRaiz hacer
+        q ← q + 1
+
+    tamañoIzquierdo ← q - i
+
+    v ← CrearNodo(valorRaiz)
+    π(v) ← padre
+
+    left(v) ← Reconstruir(
+        EO, PO, i, q - 1, p + 1, v
+    )
+
+    right(v) ← Reconstruir(
+        EO, PO, q + 1, j, p + 1 + tamañoIzquierdo, v
+    )
+
+    devolver v
+```
 
 ## Prueba de terminación
 
-<!-- Indicar la medida que disminuye y los casos base alcanzados. -->
+Consideremos como medida el número de elementos del segmento $EO[i..j]$. Si $i>j$, el segmento está vacío y la función devuelve `NONE` inmediatamente.
+
+Si el segmento no está vacío, el ciclo de búsqueda incrementa $q$ hasta encontrar `valorRaiz`. Como los arreglos contienen recorridos válidos del mismo subárbol, este valor aparece en $EO[i..j]$; por tanto, la búsqueda termina.
+
+La posición encontrada $q$ divide el segmento en $EO[i..q-1]$ y $EO[q+1..j]$. Ambos contienen estrictamente menos elementos que el segmento original, pues excluyen la raíz. En consecuencia, la medida disminuye estrictamente en cada descenso recursivo y, al ser un entero no negativo, necesariamente se alcanza el caso base.
+
+Una vez que terminan ambas llamadas recursivas, solo se realizan las asignaciones de los hijos y se devuelve el nodo creado. Por lo tanto, todas las llamadas terminan y, en particular, termina la llamada inicial que reconstruye el árbol completo.
 
 ## Prueba de corrección
 
+Demostraremos por inducción sobre el número $m$ de vértices del subárbol que `Reconstruir(EO, PO, i, j, p, padre)` devuelve su raíz y reconstruye correctamente sus vértices, sus hijos y sus referencias al padre. Suponemos que $EO[i..j]$ y el segmento de $PO$ que comienza en $p$, de longitud $m$, son recorridos válidos del mismo subárbol.
+
 ### Caso base
 
-<!-- Comprobar los casos base definidos en el algoritmo. -->
+Si $m=0$, el segmento está vacío y $i>j$. El algoritmo devuelve `NONE`, que representa correctamente un subárbol vacío.
 
 ### Hipótesis inductiva
 
-<!-- Escribir qué se supone correcto para los subproblemas menores. -->
+Supongamos que el algoritmo reconstruye correctamente cualquier subárbol con menos de $m$ vértices a partir de sus recorridos en orden y en preorden.
 
 ### Paso inductivo
 
-<!-- Justificar la elección de raíz y la separación de los recorridos.
-     Aplicar la hipótesis y demostrar que la combinación reconstruye T. -->
+Consideremos un subárbol de $m>0$ vértices. Por la definición de preorden, su raíz es el primer vértice de su recorrido, es decir, $PO[p]$. Por tanto, el algoritmo identifica correctamente la raíz al asignar `valorRaiz ← PO[p]`.
+
+Sea $q$ la posición de ese vértice en $EO[i..j]$. Por la definición del recorrido en orden, los vértices del subárbol izquierdo son exactamente los de $EO[i..q-1]$, mientras que los del derecho son los de $EO[q+1..j]$. Así, el subárbol izquierdo tiene $q-i$ vértices.
+
+En preorden, después de la raíz aparecen todos los vértices del subárbol izquierdo y luego los del derecho. Por ello, el preorden izquierdo comienza en $p+1$ y el derecho comienza en $p+1+(q-i)$. En consecuencia, ambas llamadas recursivas reciben los segmentos que corresponden a sus respectivos subárboles.
+
+Como cada subárbol hijo tiene menos de $m$ vértices, por la hipótesis inductiva ambas llamadas los reconstruyen correctamente y devuelven sus raíces, o `NONE` si están vacíos. El algoritmo asigna estos resultados a `left(v)` y `right(v)`, respectivamente. Además, establece $\pi(v)=\texttt{padre}$ y pasa $v$ como padre a ambas llamadas, de modo que las referencias al padre también quedan correctamente definidas.
+
+Por tanto, el nodo creado y los subárboles reconstruidos forman exactamente el subárbol original. Esto completa el paso inductivo. Por lo tanto, la llamada inicial `Reconstruir(EO, PO, 1, n, 1, NONE)` reconstruye correctamente todo el árbol y devuelve su raíz $r$, cuya referencia al padre es `NONE`.
 
 ## Tiempo de ejecución
 
-<!-- Expresar el costo en términos de los tamaños de ambos subárboles
-     y del trabajo local. Justificar O(n^2) en el peor caso.
-     Incluir el costo de búsquedas y copias si el algoritmo las realiza. -->
+Consideremos una llamada que reconstruye un subárbol con $m$ vértices. Sean $a$ y $b$ los tamaños de sus subárboles izquierdo y derecho, respectivamente, de modo que:
+
+$$
+a+b=m-1.
+$$
+
+La raíz aparece después de los $a$ elementos del subárbol izquierdo en el segmento de $EO$. Como la búsqueda comienza al inicio del segmento, realiza $a+1$ comparaciones. Crear el nodo, calcular los índices y establecer sus referencias requiere tiempo constante. Además, los arreglos no se copian.
+
+Por tanto, el tiempo de una llamada no vacía, incluyendo sus llamadas recursivas, se expresa como:
+
+$$
+T(m)=T(a)+T(b)+\Theta(a+1),
+\qquad T(0)=\Theta(1).
+$$
+
+Los valores de $a$ y $b$ dependen de la forma del árbol.
+
+### Peor caso
+
+El peor caso ocurre, por ejemplo, cuando el árbol es una cadena de hijos izquierdos. En cada llamada, la raíz está al final del segmento de $EO$, por lo que se examinan todos sus elementos. Además, el único subárbol no vacío tiene un vértice menos:
+
+$$
+T(m)=T(m-1)+\Theta(m).
+$$
+
+Al desarrollar la recurrencia, obtenemos:
+
+$$
+T(n)=\Theta(n)+\Theta(n-1)+\cdots+\Theta(1)
+     =\Theta\left(\frac{n(n+1)}{2}\right)
+     =\Theta(n^2).
+$$
+
+Por otra parte, para cualquier entrada hay $n$ llamadas no vacías y cada una realiza como máximo $O(n)$ trabajo local. Las llamadas sobre segmentos vacíos añaden $O(n)$ trabajo. Por tanto, ninguna entrada supera la cota $O(n^2)$, y la familia anterior demuestra que esta cota se alcanza.
 
 ## Espacio utilizado
 
-<!-- Distinguir el árbol producido del espacio auxiliar.
-     Considerar la pila recursiva y los subarreglos si se copian. -->
+Cada llamada almacena una cantidad constante de variables y referencias. Como se utilizan índices, no se crean copias de los segmentos de los arreglos.
+
+Si $h$ es la altura del árbol, medida en aristas, la pila contiene como máximo $h+2$ llamadas simultáneas, incluyendo una posible llamada sobre un segmento vacío. Por tanto, el espacio auxiliar es:
+
+$$
+S(n)=O(h+1).
+$$
+
+En un árbol balanceado, este espacio es $O(\log n)$. En el peor caso, cuando el árbol es una cadena, es $O(n)$.
+
+Además, el árbol producido contiene $n$ nodos y requiere $\Theta(n)$ espacio. Si se incluye el almacenamiento de la salida, el espacio adicional total es $\Theta(n)$.
 
 ## Entradas con tiempo $O(n\log n)$
 
-<!-- Responder para el algoritmo escrito, describir una familia de entradas
-     si existe y justificar su costo. -->
+Sí. Consideremos la familia de árboles binarios perfectos, en los que todos los niveles están completos. En cada llamada no trivial, los dos subárboles tienen el mismo tamaño y la búsqueda de la raíz requiere tiempo proporcional al tamaño del segmento. Así:
+
+$$
+T(m)=2T\left(\frac{m-1}{2}\right)+\Theta(m).
+$$
+
+En el árbol de recursión hay $O(\log n)$ niveles. El trabajo acumulado en cada nivel es $O(n)$, pues los segmentos procesados en ese nivel son disjuntos. Por tanto:
+
+$$
+T(n)=O(n\log n).
+$$
+
+De hecho, para esta familia el tiempo es $\Theta(n\log n)$.
 
 ## Entradas con tiempo $O(n)$
 
-<!-- Examinar el trabajo local y la forma del árbol en el algoritmo escrito.
-     Si existe una familia de entradas, describirla y justificar el costo. -->
+Sí. Consideremos la familia de árboles que forman una cadena de hijos derechos. Por ejemplo, para vértices identificados por $1,2,\ldots,n$, sus recorridos son:
+
+$$
+EO=[1,2,\ldots,n],
+\qquad
+PO=[1,2,\ldots,n].
+$$
+
+En cada llamada, la raíz aparece al inicio del segmento de $EO$, por lo que la búsqueda realiza una sola comparación. El subárbol izquierdo está vacío y el derecho contiene un vértice menos. En consecuencia:
+
+$$
+T(m)=T(m-1)+\Theta(1).
+$$
+
+Al desarrollar la recurrencia, se acumulan $n$ términos constantes, por lo que:
+
+$$
+T(n)=\Theta(n).
+$$
+
+Por tanto, para esta familia el algoritmo tiene tiempo $O(n)$.
 
 ## Modificación para usar postorden
 
-### Cambios en la idea del algoritmo
+En postorden, los vértices aparecen en el siguiente orden: subárbol izquierdo, subárbol derecho y raíz. Por tanto, si el segmento de $EO$ tiene $m=j-i+1$ elementos y el segmento correspondiente de $PO$ comienza en $p$, la raíz se encuentra en:
 
-<!-- Explicar cómo cambian la elección de raíz y la delimitación de los
-     subproblemas cuando PO contiene postorden. -->
+$$
+PO[p+m-1].
+$$
 
-### Pseudocódigo o cambios al pseudocódigo original
+Al localizar la raíz en la posición $q$ de $EO$, obtenemos el tamaño del subárbol izquierdo, $a=q-i$. Como la raíz está al final del postorden, el segmento izquierdo comienza en $p$ y el derecho en $p+a$.
 
-<!-- Mostrar con precisión las instrucciones o los intervalos modificados. -->
+### Pseudocódigo
 
-### Justificación
+Los índices comienzan en $1$. Ahora $PO$ contiene el recorrido en postorden.
 
-<!-- Argumentar por qué la modificación reconstruye el árbol y señalar
-     si cambian las cotas de tiempo y espacio. -->
+```text
+Función ReconstruirPostorden(EO, PO, i, j, p, padre)
+    si i > j entonces
+        devolver NONE
+
+    m ← j - i + 1
+    valorRaiz ← PO[p + m - 1]
+
+    q ← i
+    mientras EO[q] ≠ valorRaiz hacer
+        q ← q + 1
+
+    tamañoIzquierdo ← q - i
+
+    v ← CrearNodo(valorRaiz)
+    π(v) ← padre
+
+    left(v) ← ReconstruirPostorden(
+        EO, PO, i, q - 1, p, v
+    )
+
+    right(v) ← ReconstruirPostorden(
+        EO, PO, q + 1, j, p + tamañoIzquierdo, v
+    )
+
+    devolver v
+```
+
+La llamada inicial es:
+
+```text
+r ← ReconstruirPostorden(EO, PO, 1, n, 1, NONE)
+```
+
+### Comprobación con un ejemplo
+
+Consideremos los recorridos:
+
+$$
+EO=[D,B,E,A,F,C,G],
+$$
+$$
+PO=[D,E,B,F,G,C,A].
+$$
+
+En la llamada inicial, $m=7$ y $p=1$. Por tanto, la raíz es $PO[7]=A$. Su posición en $EO$ es $q=4$, de modo que el subárbol izquierdo tiene tres vértices.
+
+Los segmentos quedan separados así:
+
+| Subárbol | En orden | Postorden |
+|---|---|---|
+| Izquierdo de $A$ | $D,B,E$ | $D,E,B$ |
+| Derecho de $A$ | $F,C,G$ | $F,G,C$ |
+
+La llamada izquierda utiliza $i=1$, $j=3$ y $p=1$. Identifica como raíz a $PO[3]=B$, con $D$ como hijo izquierdo y $E$ como hijo derecho.
+
+La llamada derecha utiliza $i=5$, $j=7$ y $p=4$. Identifica como raíz a $PO[6]=C$, con $F$ como hijo izquierdo y $G$ como hijo derecho.
+
+Así se reconstruye el árbol cuya raíz es $A$, con hijos $B$ y $C$, y hojas $D,E,F,G$.
+
+### Justificación y consistencia del análisis
+
+La prueba de terminación se conserva: la búsqueda encuentra la raíz dentro del segmento y cada llamada recursiva recibe un segmento estrictamente menor.
+
+Para la corrección, se utiliza la misma inducción sobre el número de vértices, cambiando la identificación de la raíz y los segmentos de postorden. La raíz es el último elemento del segmento; sus primeros $a$ elementos corresponden al subárbol izquierdo y los siguientes $m-1-a$ al derecho. Por tanto, las llamadas reciben exactamente los recorridos de los subárboles que deben reconstruir. La hipótesis inductiva garantiza su reconstrucción correcta y el algoritmo los enlaza con la raíz.
+
+La búsqueda en $EO$ sigue comenzando por la izquierda, por lo que el trabajo local continúa siendo $\Theta(a+1)$. En consecuencia, se mantienen el tiempo $O(n^2)$ en el peor caso, el espacio auxiliar $O(h+1)$ y el espacio $\Theta(n)$ del árbol producido.
 
 # Ejercicio 4. Consultas de rutas a gran escala
 
