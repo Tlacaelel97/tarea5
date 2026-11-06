@@ -124,7 +124,7 @@ $O(\log n)$? Argumenta tu respuesta.
 
 ## Idea del algoritmo
 
-La idea del algoritmo es aplicar divide y vencerás sobre el árbol con raíz $r$. Para cada nodo $v$, se resuelven recursivamente los subárboles de sus hijos. Cada llamada devuelve, como máximo, una estación pendiente de emparejar, o `NONE` si todas las estaciones de su subárbol ya quedaron emparejadas. El nodo $v$ reúne las estaciones pendientes recibidas y se incluye a sí mismo si es una estación. Con estas candidatas forma e imprime las parejas posibles y devuelve al padre la estación que quede pendiente, si existe. Durante este proceso se garantiza que los caminos de las parejas formadas no comparten aristas y que el camino desde la estación pendiente hasta $v$ queda libre de aristas utilizadas por esas parejas. Como el árbol completo contiene un número par de estaciones, al finalizar la llamada sobre $r$ no queda ninguna pendiente y todas quedan emparejadas.
+La idea del algoritmo es aplicar divide y vencerás sobre el árbol con raíz $r$. Para cada nodo $v$, se resuelven recursivamente los subárboles de sus hijos. Cada llamada devuelve máximo una estación pendiente de emparejar, o `NONE` si todas las estaciones de su subárbol ya quedaron emparejadas. El nodo $v$ reúne las estaciones pendientes recibidas y se incluye a sí mismo si es una estación. Con estas candidatas forma e imprime las parejas posibles y devuelve al padre la estación que quede pendiente, si existe. Durante este proceso se garantiza que los caminos de las parejas formadas no comparten aristas y que el camino desde la estación pendiente hasta $v$ queda libre de aristas utilizadas por esas parejas. Como el árbol completo contiene un número par de estaciones, al finalizar la llamada sobre $r$ no queda ninguna pendiente y todas quedan emparejadas.
 
 ## Pseudocódigo
 
@@ -164,7 +164,7 @@ Función Emparejar(v)
 
 Consideremos como medida el número de vértices del subárbol recibido por cada llamada a `Emparejar(v)`. Si $v=\texttt{NONE}$, el subárbol está vacío y la función termina inmediatamente.
 
-Si $v\neq\texttt{NONE}$, el algoritmo realiza llamadas recursivas sobre los subárboles de sus hijos. Cada uno contiene estrictamente menos vértices que el subárbol con raíz en $v$, pues no incluye al propio $v$. Por tanto, la medida disminuye estrictamente en cada descenso recursivo y, al ser un entero no negativo, necesariamente se alcanza el caso base.
+Si $v\neq\texttt{NONE}$, el algoritmo realiza llamadas recursivas sobre los subárboles de sus hijos. Cada uno contiene menos vértices que el subárbol con raíz en $v$, pues no incluye al propio $v$. Por tanto, la medida disminuye en cada descenso recursivo y, al ser un entero no negativo, necesariamente se alcanza el caso base.
 
 Una vez que regresan ambas llamadas recursivas, se ejecuta una cantidad finita de operaciones sobre una lista de tamaño máximo tres y se devuelve un resultado. En consecuencia, todas las llamadas terminan y, en particular, termina la llamada inicial `Emparejar(r)`.
 
